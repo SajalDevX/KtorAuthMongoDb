@@ -8,4 +8,5 @@ import com.example.util.Response
 interface AuthRepository{
     suspend fun signUp(params: SignUpParams): Response<AuthResponse>
     suspend fun signIn(params: SignInParams):Response<AuthResponse>
+    suspend fun changeUserRole(currentUserId:String,requestId:String,role:String):Response<AuthResponse>
 }

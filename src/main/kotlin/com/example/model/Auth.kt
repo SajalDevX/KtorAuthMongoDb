@@ -20,7 +20,9 @@ data class SignInParams(
 data class AuthResponseData(
     val id: String,
     val name: String,
+    val email: String,
     val token: String,
+    val role:String?
 )
 
 @Serializable

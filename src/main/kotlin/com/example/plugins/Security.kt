@@ -1,43 +1,51 @@
 package com.example.plugins
 
+import com.example.util.JwtTokenBody
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureSecurity() {
-    authentication {
-        basic(name = "myauth1") {
-            realm = "Ktor Server"
-            validate { credentials ->
-                if (credentials.name == credentials.password) {
-                    UserIdPrincipal(credentials.name)
-                } else {
-                    null
-                }
-            }
+    install(Authentication) {
+        /**
+         * Setup the JWT authentication to be used in [Routing].
+         * If the token is valid, the corresponding [User] is fetched from the database.
+         * The [User] can then be accessed in each [ApplicationCall].
+         */
+        jwt(RoleManagement.CUSTOMER.role) {
+            provideJwtAuthConfig(this, RoleManagement.CUSTOMER)
         }
-    
-        form(name = "myauth2") {
-            userParamName = "user"
-            passwordParamName = "password"
-            challenge {
-                /**/
-            }
+        jwt(RoleManagement.ADMIN.role) {
+            provideJwtAuthConfig(this, RoleManagement.ADMIN)
         }
-    }
-    routing {
-        authenticate("myauth1") {
-            get("/protected/route/basic") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
+        jwt(RoleManagement.SELLER.role) {
+            provideJwtAuthConfig(this, RoleManagement.SELLER)
         }
-        authenticate("myauth2") {
-            get("/protected/route/form") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
+        jwt(RoleManagement.SUPER_ADMIN.role) {
+            provideJwtAuthConfig(this, RoleManagement.SUPER_ADMIN)
         }
     }
 }
+
+fun provideJwtAuthConfig(jwtConfig: JWTAuthenticationProvider.Config, userRole: RoleManagement) {
+    jwtConfig.verifier(JwtController.verifier)
+    jwtConfig.realm = "ktor.io"
+    jwtConfig.validate {
+        val userId = it.payload.getClaim("userId").asString()
+        val email = it.payload.getClaim("email").asString()
+        val userType = it.payload.getClaim("userType").asString()
+        if (userType == userRole.role) {
+            JwtTokenBody(userId, email, userType)
+        } else null
+    }
+}
+
+enum class RoleManagement(val role: String) {
+    SUPER_ADMIN("super_admin"),
+    ADMIN("admin"),
+    SELLER("seller"),
+    CUSTOMER("customer")
+}
+

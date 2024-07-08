@@ -10,5 +10,6 @@ data class UserEntity(
     val id: String = ObjectId().toString(),
     val username:String?=null,
     val email: String?=null,
-    val password: String?=null
+    val password: String?=null,
+    val userType:String="customer"
 )

@@ -1,4 +1,4 @@
-
+val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val kmongo_version: String by project
@@ -25,6 +25,9 @@ repositories {
 }
 
 dependencies {
+    implementation("dev.forst:ktor-openapi-generator:0.6.1")
+
+
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
@@ -37,7 +40,10 @@ dependencies {
     // KMongo
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
     implementation("io.insert-koin:koin-ktor:$koin_version")
-
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
 
 

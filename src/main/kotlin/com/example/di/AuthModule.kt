@@ -14,6 +14,6 @@ val authModule = module {
     single {
         KMongo.createClient()
             .coroutine
-            .getDatabase("social_app_db")
+            .getDatabase("auth_db")
     }
 }
